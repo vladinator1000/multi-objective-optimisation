@@ -61,4 +61,4 @@ for path in filePaths:
 	# Copy stuff to new object
 
 
-pprint(data['nrp3'].keys())
+pprint('Data loaded:', data[].keys())
