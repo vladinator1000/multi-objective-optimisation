@@ -1,11 +1,9 @@
 import os
 import csv
-import pandas as pd
 
 from itertools import chain
 from copy import deepcopy
 from ntpath import basename
-from pprint import pprint
 
 
 location = os.path.realpath(
@@ -70,5 +68,3 @@ for path in filePaths:
 			'weight': profit / len(customerRows),
 			'requirements': row[2:]
 		})
-
-print('Data loaded.') 
