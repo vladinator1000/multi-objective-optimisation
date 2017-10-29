@@ -17,7 +17,19 @@ filePaths = [
 	os.path.join(location, '../realistic-nrp/nrp-e3.txt')
 ]
 
-# Read text files and map them to dicts
+# 
+'''
+	Data in the form of:
+	dict = {
+		textFileName: {
+			requirementCosts: number[],
+			customers: [
+				{ weight: float, requirements: number[] },
+				...
+			]
+		}
+	}
+'''
 data = {}
 
 for path in filePaths:
@@ -33,32 +45,30 @@ for path in filePaths:
 
 
 	numLevels = rows[0][0]
-	requirements = rows[1:numLevels * 2 + 1]
+	requirementCosts = rows[1:numLevels * 2 + 1]
 
 	# Flatten [[1], [2, 3], ...] to [1, 2, 3, ...]
-	requirements = list(chain(*requirements[1::2]))
+	requirementCosts = list(chain(*requirementCosts[1::2]))
 
 
-	withoutRequirements = rows[numLevels * 2 + 1:]
-	rowsToSkip = withoutRequirements[0][0]
+	withoutRequirementCosts = rows[numLevels * 2 + 1:]
+	rowsToSkip = withoutRequirementCosts[0][0]
 
-	withoutDeps = withoutRequirements[rowsToSkip + 2:]
+	customerRows = withoutRequirementCosts[rowsToSkip + 2:]
 
-	customers = {}
 	fileName = basename(path).strip('.txt')
 
 	data[fileName] = {
-		'requirements': requirements[:],
-		'customers': {},
+		'requirementCosts': requirementCosts[:],
+		'customers': [],
 	}
 
-	for i, row in enumerate(withoutDeps):
-		data[fileName]['customers'][i] = {}
-		data[fileName]['customers'][i]['profit'] = row[0]
-		data[fileName]['customers'][i]['numReqs'] = row[1]
-		data[fileName]['customers'][i]['requirements'] = row[2:]
+	for row in customerRows:
+		profit = row[0]
 
-	# Copy stuff to new object
+		data[fileName]['customers'].append({
+			'weight': profit / len(customerRows),
+			'requirements': row[2:]
+		})
 
-
-pprint('Data loaded:', data[].keys())
+print('Data loaded.') 
