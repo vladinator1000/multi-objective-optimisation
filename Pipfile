@@ -9,6 +9,7 @@ pandas = "*"
 deap = "*"
 matplotlib = "*"
 numpy = "*"
+seaborn = "*"
 
 
 [dev-packages]
