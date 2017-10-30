@@ -17,8 +17,8 @@ filePaths = [
 
 # 
 '''
-	Data in the form of:
-	dict = {
+	Data will be in this form:
+	data = {
 		textFileName: {
 			requirementCosts: number[],
 			customers: [
