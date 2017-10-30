@@ -1,16 +1,13 @@
 from deap import algorithms, base, benchmarks, tools, creator
 from random import randint
 from numpy import dot
-from matplotlib import pyplot, animation
+from matplotlib import pyplot
 from copy import deepcopy
-from pandas import DataFrame
-from seaborn import color_palette
 
 from data import data
 from score import getScoreVector
 
-dataSet = data['nrp3']
-
+dataSet = data['nrp-e3']
 
 scoreVector = getScoreVector(dataSet)
 costVector = dataSet['requirementCosts']
@@ -23,7 +20,6 @@ creator.create('FitnessMaxMin', base.Fitness, weights = (1.0, -1.0))
 
 # Create an Individual type that will have the fitness declared above
 creator.create('Individual', list, typecode = 'd', fitness = creator.FitnessMaxMin)
-
 
 # Make functions that will be called later,
 # first argument is name of the function being declared
@@ -49,11 +45,15 @@ toolbox.register('mutate', tools.mutFlipBit, indpb = 0.05)
 toolbox.register('select', tools.selNSGA2)
 
 # Set GA parameters
-toolbox.pop_size = 10
-toolbox.max_gen = 10
+toolbox.pop_size = 50
+toolbox.max_gen = 1000
 toolbox.mut_prob = 0.1
 
-def runGA(toolbox, stats = None, verbose = False):
+# Store individuals in logbook
+stats = tools.Statistics()
+stats.register("pop", deepcopy)
+
+def runGA(toolbox = toolbox, stats = stats, verbose = False):
 	pop = toolbox.population(n = toolbox.pop_size)
 	pop = toolbox.select(pop, len(pop))
 
@@ -62,59 +62,32 @@ def runGA(toolbox, stats = None, verbose = False):
 	return algorithms.eaMuPlusLambda(
 		pop,
 		toolbox,
-		mu = toolbox.pop_size, 
-		lambda_ = toolbox.pop_size, 
+		mu = toolbox.pop_size,
+		lambda_ = toolbox.pop_size,
 		cxpb = 1 - toolbox.mut_prob,
-		mutpb = toolbox.mut_prob, 
-		stats = stats, 
-		ngen = toolbox.max_gen, 
+		mutpb = toolbox.mut_prob,
+		stats = stats,
+		ngen = toolbox.max_gen,
 		verbose = verbose
 	)
 
+def runRandom(toolbox = toolbox):
+	currentGen = 0
+	allGenerations = []
+	fitnessesPerGen = []
+	pop = toolbox.population(n = toolbox.pop_size)
 
-# Store individuals in logbook
-stats = tools.Statistics()
-stats.register("pop", deepcopy)
+	while currentGen < toolbox.max_gen:
+		allGenerations.append(pop)
 
-# Run the algorithm
-result, logbook = runGA(toolbox, stats = stats)
-
-
-plot_colors = color_palette("Set1", n_colors=20)
-
-def animate(frame_index, logbook):
-	ax.clear()
-	fronts = tools.emo.sortLogNondominated(
-		logbook.select('pop')[frame_index], 
-		len(logbook.select('pop')[frame_index])
-	)
-
-	for i, individuals in enumerate(fronts):
-		par = [toolbox.evaluate(ind) for ind in individuals]
-		dataFrame = DataFrame(par)
-
-		dataFrame.plot(
-			ax = ax,
-			kind = 'scatter',
-			label = 'Front ' + str(i + 1), 
-			x = dataFrame.columns[0],
-			y = dataFrame.columns[1], 
-			color=plot_colors[i]
+		fitnessesPerGen.append(
+			list(toolbox.map(toolbox.evaluate, pop))
 		)
-		
-	ax.set_title('Generation: ' + str(frame_index))
-	ax.set_xlabel('Score (trying to maximise)')
-	ax.set_ylabel('Cost (trying to minimise)')
-	
-	return []
 
-fig = pyplot.figure()
-ax = fig.gca()
+		pop = toolbox.population(n = toolbox.pop_size)
+		currentGen += 1
 
-anim = animation.FuncAnimation(fig, lambda i: animate(i, logbook), 
-	frames=len(logbook),
-	interval=15, 
-	blit=True
-)
 
-pyplot.show()
+	return allGenerations, fitnessesPerGen
+
+# TODO single objective

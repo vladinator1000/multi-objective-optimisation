@@ -15,7 +15,7 @@ filePaths = [
 	os.path.join(location, '../realistic-nrp/nrp-e3.txt')
 ]
 
-# 
+#
 '''
 	Data will be in this form:
 	data = {
@@ -61,10 +61,12 @@ for path in filePaths:
 		'customers': [],
 	}
 
+	profitsSum = sum([element[0] for element in customerRows])
+
 	for row in customerRows:
 		profit = row[0]
 
 		data[fileName]['customers'].append({
-			'weight': profit / len(customerRows),
+			'weight': profit / profitsSum,
 			'requirements': row[2:]
 		})

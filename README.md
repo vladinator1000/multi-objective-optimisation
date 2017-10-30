@@ -32,7 +32,7 @@ Wait for the GA to run, you'll see an [animation](https://youtu.be/xeNv6VDH004) 
 #### If you prefer using Anaconda:
 You'll need to install [DEAP](https://github.com/DEAP/deap) globally:
 ```bash
-$ pip install deap
+$ conda install -c conda-forge deap
 ```
 
 cd to project directory and:
