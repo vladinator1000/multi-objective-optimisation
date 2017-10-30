@@ -27,8 +27,7 @@ $ pipenv shell
 ```bash
 $ python src/geneticAlgorithm.py
 ```
-Wait for the GA to run, you'll see an animation at the end, similar to the [video](ParetoFrontsAnimation.mp4) in the project root.
-
+Wait for the GA to run, you'll see an [animation](https://youtu.be/xeNv6VDH004) at the end.
 
 #### If you prefer using Anaconda:
 You'll need to install [DEAP](https://github.com/DEAP/deap) globally:
