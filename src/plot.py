@@ -1,14 +1,16 @@
 from pandas import DataFrame
-from seaborn import color_palette
+import seaborn
 from deap import tools
 from matplotlib import pyplot
+from pprint import pprint
 
-from algorithms import toolbox, stats, runGA, runRandom
+from toolboxes import nsgaToolbox, singleObjToolbox
+from algorithms import runGA, runRandom
 
 # Make a plot figure
 fig = pyplot.figure()
 ax = fig.gca()
-plot_colors = color_palette("Set1", n_colors=20)
+plot_colors = seaborn.color_palette("Set1", n_colors=20)
 
 # Run the random algorithm
 randomGenerations, fitnessesPerGen = runRandom()
@@ -21,11 +23,14 @@ for gen in fitnessesPerGen:
 		randomScores.append(fitness[0])
 		randomCosts.append(fitness[1])
 
-pyplot.scatter(randomScores, randomCosts, label = 'random', s = 2)
+fig, ax = pyplot.subplots()
+pyplot.scatter(randomScores, randomCosts, label = 'random', s = 1, color = plot_colors[19], ax = ax)
 
 
-# Run NSGA2
-result, logbook = runGA(toolbox)
+#
+# # Run NSGA2
+# for index in range(3):
+result, logbook = runGA(nsgaToolbox, maxGen = 10)
 
 fronts = tools.emo.sortLogNondominated(
 	result,
@@ -33,23 +38,24 @@ fronts = tools.emo.sortLogNondominated(
 )
 
 # Plot genetic results
-for i, individuals in enumerate(fronts):
-	par = [toolbox.evaluate(ind) for ind in individuals]
-	dataFrame = DataFrame(par)
+# for i, individuals in enumerate(fronts):
+par = [nsgaToolbox.evaluate(ind) for ind in fronts[0]]
+df = DataFrame(par)
 
-	dataFrame.plot(
-		ax = ax,
-		kind = 'scatter',
-		label = 'NSGA2 Last Generation Front',
-		x = dataFrame.columns[0],
-		y = dataFrame.columns[1],
-		color = plot_colors[i]
-	)
+# seaborn.kdeplot(df.loc[:, 0], df.loc[:, 1], ax = ax)
+# df.plot(
+# 	ax = ax,
+# 	label = 'Front Gen {}'.format(index),
+# 	s = 2,
+# 	kind = 'scatter',
+# 	x = df.columns[0],
+# 	y = df.columns[1],
+# 	color = plot_colors[index]
+# )
+
+
 
 pyplot.xlabel('Score')
 pyplot.ylabel('Cost')
 pyplot.legend()
-# pyplot.show()
-
-
-print(logbook.select('gen', 'avgScore', 'stdScore'))
+pyplot.show()

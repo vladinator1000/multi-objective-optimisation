@@ -1,28 +1,12 @@
 from deap import algorithms, base, benchmarks, tools, creator
-from copy import deepcopy
-import numpy
 
-from toolbox import toolbox
+from toolboxes import nsgaToolbox, statsGen
 from data import data
-from score import getScoreVector
 
-dataSet = data['nrp-e3']
+dataSet = data['nrp1']
 
-
-# Store individuals in logbook
-stats = tools.Statistics(key=lambda ind: ind.fitness.values)
-stats.register("population", deepcopy)
-stats.register("avgScore", numpy.mean, axis = 0)
-stats.register("stdScore", numpy.std, axis = 0)
-stats.register("minScore", numpy.min, axis = 0)
-stats.register("maxScore", numpy.max, axis = 0)
-
-def runGA(toolbox = toolbox, popSize = 50, maxGen = 10, mutProb = 0.1, stats = stats):
-	toolbox.pop_size = popSize
-	toolbox.max_gen = maxGen
-	toolbox.mut_prob = mutProb
-
-	pop = toolbox.population(n = toolbox.pop_size)
+def runGA(toolbox = nsgaToolbox, popSize = 50, maxGen = 10, mutProb = 0.1, stats = statsGen):
+	pop = toolbox.population(n = popSize)
 	pop = toolbox.select(pop, len(pop))
 
 	# Run evolutionary algorithm
@@ -30,29 +14,31 @@ def runGA(toolbox = toolbox, popSize = 50, maxGen = 10, mutProb = 0.1, stats = s
 	return algorithms.eaMuPlusLambda(
 		pop,
 		toolbox,
-		mu = toolbox.pop_size,
-		lambda_ = toolbox.pop_size,
-		cxpb = 1 - toolbox.mut_prob,
-		mutpb = toolbox.mut_prob,
+		mu = popSize,
+		lambda_ = popSize,
+		cxpb = 1.0 - mutProb,
+		mutpb = mutProb,
 		stats = stats,
-		ngen = toolbox.max_gen,
+		ngen = maxGen,
 		verbose = False
 	)
 
-def runRandom(toolbox = toolbox):
+def runRandom(toolbox = nsgaToolbox, popSize = 50, maxGen = 10):
 	currentGen = 0
 	allGenerations = []
 	fitnessesPerGen = []
-	pop = toolbox.population(n = toolbox.pop_size)
 
-	while currentGen < toolbox.max_gen:
-		allGenerations.append(pop)
+	# Use toolbox only to generate population
+	population = toolbox.population(n = popSize)
+
+	while currentGen < maxGen:
+		allGenerations.append(population)
 
 		fitnessesPerGen.append(
-			list(toolbox.map(toolbox.evaluate, pop))
+			list(toolbox.map(toolbox.evaluate, population))
 		)
 
-		pop = toolbox.population(n = toolbox.pop_size)
+		population = toolbox.population(n = popSize)
 		currentGen += 1
 
 

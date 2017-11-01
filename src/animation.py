@@ -2,27 +2,54 @@ from pandas import DataFrame
 from seaborn import color_palette
 from matplotlib import pyplot, animation
 from deap import tools
+from pprint import pprint
 
-from algorithms import toolbox, runGA
+from toolboxes import nsgaToolbox, statsFit
+from algorithms import runGA
 
 
 # Runs the Genetic Algorithm and animates fronts for each generation
-result, logbook = runGA(toolbox, maxGen = 100)
+finalGen, logbook = runGA(nsgaToolbox, maxGen = 100)
 
-plot_colors = color_palette("Set1", n_colors=20)
+allGens = logbook.select('allGenerations')
+
+# Calculate fitness stats
+allGenerationsFit = []
+for generation in allGens:
+	allGenerationsFit.append(
+		list(
+			map(nsgaToolbox.evaluate, generation)
+		)
+	)
+
+fitnessStats = statsFit.compile(allGenerationsFit)
+
+minimums = fitnessStats['min']
+maximums = fitnessStats['max']
+
+minScore = minimums[0][0]
+maxScore = maximums[len(maximums) - 1][0]
+
+minCost = minimums[0][1]
+maxCost = maximums[len(maximums) - 1][1]
+
+plot_colors = color_palette("Set1", n_colors = 15)
 
 def animate(frame_index, logbook):
 	ax.clear()
 	ax.set_autoscaley_on(False)
-	ax.set_ylim([5000, 5500])
-	ax.set_xlim([2, 3])
+	ax.set_ylim([minCost, maxCost])
+	ax.set_xlim([minScore, maxScore])
+
+	allGenerations = logbook.select('allGenerations')
+
 	fronts = tools.emo.sortLogNondominated(
-		logbook.select('populaton')[frame_index],
-		len(logbook.select('populaton')[frame_index])
+		allGenerations[frame_index],
+		len(allGenerations[frame_index])
 	)
 
 	for i, individuals in enumerate(fronts):
-		par = [toolbox.evaluate(ind) for ind in individuals]
+		par = [nsgaToolbox.evaluate(ind) for ind in individuals]
 		dataFrame = DataFrame(par)
 
 		dataFrame.plot(
@@ -31,7 +58,7 @@ def animate(frame_index, logbook):
 			label = 'Front ' + str(i + 1),
 			x = dataFrame.columns[0],
 			y = dataFrame.columns[1],
-			color=plot_colors[i]
+			color = plot_colors[i]
 		)
 
 	ax.set_title('Generation: ' + str(frame_index))
@@ -42,7 +69,6 @@ def animate(frame_index, logbook):
 
 fig = pyplot.figure()
 ax = fig.gca()
-
 
 anim = animation.FuncAnimation(
 	fig,

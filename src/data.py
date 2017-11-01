@@ -11,8 +11,8 @@ location = os.path.realpath(
 )
 
 filePaths = [
-	os.path.join(location, '../classic-nrp/nrp3.txt'),
-	os.path.join(location, '../realistic-nrp/nrp-e3.txt')
+	os.path.join(location, '../classic-nrp/nrp1.txt'),
+	# os.path.join(location, '../realistic-nrp/nrp-e3.txt')
 ]
 
 #
@@ -43,11 +43,10 @@ for path in filePaths:
 
 
 	numLevels = rows[0][0]
-	requirementCosts = rows[1:numLevels * 2 + 1]
+	requirementCosts = rows[1:numLevels * 2 + 1:]
 
 	# Flatten [[1], [2, 3], ...] to [1, 2, 3, ...]
 	requirementCosts = list(chain(*requirementCosts[1::2]))
-
 
 	withoutRequirementCosts = rows[numLevels * 2 + 1:]
 	rowsToSkip = withoutRequirementCosts[0][0]
