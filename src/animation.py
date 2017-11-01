@@ -7,15 +7,18 @@ from algorithms import toolbox, runGA
 
 
 # Runs the Genetic Algorithm and animates fronts for each generation
-result, logbook = runGA(toolbox)
+result, logbook = runGA(toolbox, maxGen = 100)
 
 plot_colors = color_palette("Set1", n_colors=20)
 
 def animate(frame_index, logbook):
 	ax.clear()
+	ax.set_autoscaley_on(False)
+	ax.set_ylim([5000, 5500])
+	ax.set_xlim([2, 3])
 	fronts = tools.emo.sortLogNondominated(
-		logbook.select('pop')[frame_index],
-		len(logbook.select('pop')[frame_index])
+		logbook.select('populaton')[frame_index],
+		len(logbook.select('populaton')[frame_index])
 	)
 
 	for i, individuals in enumerate(fronts):
@@ -39,6 +42,7 @@ def animate(frame_index, logbook):
 
 fig = pyplot.figure()
 ax = fig.gca()
+
 
 anim = animation.FuncAnimation(
 	fig,

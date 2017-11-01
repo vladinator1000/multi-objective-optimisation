@@ -1,59 +1,27 @@
 from deap import algorithms, base, benchmarks, tools, creator
-from random import randint
-from numpy import dot
-from matplotlib import pyplot
 from copy import deepcopy
+import numpy
 
+from toolbox import toolbox
 from data import data
 from score import getScoreVector
 
 dataSet = data['nrp-e3']
 
-scoreVector = getScoreVector(dataSet)
-costVector = dataSet['requirementCosts']
-howManyRequirements = len(costVector)
-
-
-# Create a fitness Type,
-# maximise first (score), minimise second (cost) element
-creator.create('FitnessMaxMin', base.Fitness, weights = (1.0, -1.0))
-
-# Create an Individual type that will have the fitness declared above
-creator.create('Individual', list, typecode = 'd', fitness = creator.FitnessMaxMin)
-
-# Make functions that will be called later,
-# first argument is name of the function being declared
-toolbox = base.Toolbox()
-
-# Each solution will be made up of bools
-toolbox.register('attr_bool', randint, 0, 1)
-
-# and will be 'n' elements long
-toolbox.register('individual', tools.initRepeat, creator.Individual, toolbox.attr_bool, n = howManyRequirements)
-toolbox.register('population', tools.initRepeat, list, toolbox.individual)
-
-# Fitness Function
-def getScoreAndCost(requirementVec = [], scoreVec = scoreVector, costVec = costVector):
-	score = dot(scoreVec, requirementVec)
-	cost = dot(costVec, requirementVec)
-
-	return score, cost
-
-toolbox.register('evaluate', getScoreAndCost)
-toolbox.register('mate', tools.cxTwoPoint)
-toolbox.register('mutate', tools.mutFlipBit, indpb = 0.05)
-toolbox.register('select', tools.selNSGA2)
-
-# Set GA parameters
-toolbox.pop_size = 50
-toolbox.max_gen = 1000
-toolbox.mut_prob = 0.1
 
 # Store individuals in logbook
-stats = tools.Statistics()
-stats.register("pop", deepcopy)
+stats = tools.Statistics(key=lambda ind: ind.fitness.values)
+stats.register("population", deepcopy)
+stats.register("avgScore", numpy.mean, axis = 0)
+stats.register("stdScore", numpy.std, axis = 0)
+stats.register("minScore", numpy.min, axis = 0)
+stats.register("maxScore", numpy.max, axis = 0)
 
-def runGA(toolbox = toolbox, stats = stats, verbose = False):
+def runGA(toolbox = toolbox, popSize = 50, maxGen = 10, mutProb = 0.1, stats = stats):
+	toolbox.pop_size = popSize
+	toolbox.max_gen = maxGen
+	toolbox.mut_prob = mutProb
+
 	pop = toolbox.population(n = toolbox.pop_size)
 	pop = toolbox.select(pop, len(pop))
 
@@ -68,7 +36,7 @@ def runGA(toolbox = toolbox, stats = stats, verbose = False):
 		mutpb = toolbox.mut_prob,
 		stats = stats,
 		ngen = toolbox.max_gen,
-		verbose = verbose
+		verbose = False
 	)
 
 def runRandom(toolbox = toolbox):
@@ -89,5 +57,3 @@ def runRandom(toolbox = toolbox):
 
 
 	return allGenerations, fitnessesPerGen
-
-# TODO single objective
