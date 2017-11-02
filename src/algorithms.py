@@ -1,11 +1,9 @@
 from deap import algorithms, base, benchmarks, tools, creator
 
-from toolboxes import nsgaToolbox, statsGen
+from toolboxes import nsgaToolbox, singleObjToolbox, statsGen
 from data import data
 
-dataSet = data['nrp1']
-
-def runGA(toolbox = nsgaToolbox, popSize = 50, maxGen = 10, mutProb = 0.1, stats = statsGen):
+def runGA(toolbox = nsgaToolbox, popSize = 50, maxGen = 10, mutProb = 0.1, stats = statsGen, hallOfFame = None):
 	pop = toolbox.population(n = popSize)
 	pop = toolbox.select(pop, len(pop))
 
@@ -20,6 +18,7 @@ def runGA(toolbox = nsgaToolbox, popSize = 50, maxGen = 10, mutProb = 0.1, stats
 		mutpb = mutProb,
 		stats = stats,
 		ngen = maxGen,
+		halloffame = hallOfFame,
 		verbose = False
 	)
 

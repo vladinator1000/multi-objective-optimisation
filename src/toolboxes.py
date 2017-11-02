@@ -64,7 +64,8 @@ def getSingleFitness(requirementVec = [], scoreVec = scoreVector, costVec = cost
 	score = numpy.dot(scoreVec, requirementVec)
 	cost = numpy.dot(costVec, requirementVec)
 
-	return score / cost
+	# Return a sequence with one element
+	return score / cost,
 
 singleObjToolbox.register('evaluate', getSingleFitness)
 singleObjToolbox.register('mate', tools.cxTwoPoint)
