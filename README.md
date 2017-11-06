@@ -1,10 +1,14 @@
 # multi-objective-optimisation
+![animation of improving generations](https://media.giphy.com/media/xUOxeZiPQZXuw3MMU0/giphy.gif)
+
 
 Suppose we're developing a software, we have a list of requirements,
 their costs and a list of customers with desired requirements ordered by wishes.
 Each customer has a weight. Each requirement has a cost and score. Using a genetic algorithm
 this project is trying to find solutions using NSGA2 selection.
 Trying to minimise cost and maximise score.
+
+This repo comes with a complementary [report](VladyVeselinov-ATSE-Assignment3.pdf).
 
 Using the [DEAP](https://github.com/DEAP/deap) Evolutionary Algorithms Python library.
 Main paper for reference: [Deb et al.](http://ieeexplore.ieee.org/document/996017/)
@@ -16,7 +20,7 @@ Reference for [DEAP multi-objective-optimisation](https://github.com/lmarti/evol
 $ pip install pipenv
 ```
 
-### 2. cd to project directory and:
+### 2. Cd to project directory and:
 ```bash
 $ pipenv install
 ```
@@ -24,21 +28,37 @@ $ pipenv install
 ```bash
 $ pipenv shell
 ```
-```bash
-$ python src/geneticAlgorithm.py
-```
-Wait for the GA to run, you'll see an [animation](https://youtu.be/xeNv6VDH004) at the end.
 
-#### If you prefer using Anaconda:
+1. To see a plot comparing random, single objective and multi-objective:
+
+```bash
+$ python src/plot.py
+```
+
+2. To see the animation:
+```bash
+$ python src/animation.py
+```
+
+#### If you prefer not to use pipenv:
 You'll need to install [DEAP](https://github.com/DEAP/deap) globally:
+```bash
+$ pip install deap
+```
+or using [Conda](https://github.com/conda/conda)
 ```bash
 $ conda install -c conda-forge deap
 ```
 
-cd to project directory and:
+Cd to project directory and:
+1. To see a plot comparing random, single objective and multi-objective:
 
 ```bash
-$ python src/geneticAlgorithm.py
+$ python src/plot.py
 ```
 
+2. To see the animation:
+```bash
+$ python src/animation.py
+```
 ✨🍰✨

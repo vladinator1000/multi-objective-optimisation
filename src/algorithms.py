@@ -1,7 +1,6 @@
 from deap import algorithms, base, benchmarks, tools, creator
 
 from toolboxes import nsgaToolbox, singleObjToolbox, statsGen
-from data import data
 
 def runGA(toolbox = nsgaToolbox, popSize = 50, maxGen = 10, mutProb = 0.1, stats = statsGen, hallOfFame = None):
 	pop = toolbox.population(n = popSize)

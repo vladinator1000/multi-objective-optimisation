@@ -8,8 +8,8 @@ from itertools import chain
 from toolboxes import nsgaToolbox, singleObjToolbox
 from algorithms import runGA, runRandom
 
-ITERATIONS = 10
-GENERATIONS = 200
+ITERATIONS = 3
+GENERATIONS = 50
 
 # Make a plot figure
 fig, ax = plt.subplots()
@@ -81,7 +81,7 @@ seaborn.kdeplot(
 plt.scatter(
 	nsgaDf[nsgaDf.columns[0]],
 	nsgaDf[nsgaDf.columns[1]],
-	label = '(red) NSGA2 Last Fronts For {} Iters'.format(ITERATIONS),
+	label = '(red) NSGA2 Last Fronts'.format(ITERATIONS),
 	s = 3,
 	color = 'r',
 	alpha = .3
@@ -111,6 +111,6 @@ plt.scatter(
 
 plt.xlabel('Score')
 plt.ylabel('Cost')
-plt.title('Results for {} iterations, {} generations each.'.format(ITERATIONS, GENERATIONS))
+plt.title('Results for {} iterations, {} generations.'.format(ITERATIONS, GENERATIONS))
 plt.legend()
 plt.show()

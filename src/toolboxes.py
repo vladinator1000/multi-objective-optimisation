@@ -1,18 +1,15 @@
-from deap import algorithms, base, benchmarks, tools, creator
+from deap import algorithms, base, tools, creator
 from random import randint
 from copy import deepcopy
 import numpy
 
-
 from data import data
 from score import getScoreVector
-
 
 dataSet = data['nrp1']
 
 scoreVector = getScoreVector(dataSet)
 costVector = dataSet['requirementCosts']
-howManyRequirements = len(costVector)
 
 # NSGA2 toolbox
 
@@ -34,7 +31,7 @@ nsgaToolbox = base.Toolbox()
 nsgaToolbox.register('attr_bool', randint, 0, 1)
 
 # and will be 'n' elements long
-nsgaToolbox.register('individual', tools.initRepeat, creator.Individual, nsgaToolbox.attr_bool, n = howManyRequirements)
+nsgaToolbox.register('individual', tools.initRepeat, creator.Individual, nsgaToolbox.attr_bool, n = len(costVector))
 nsgaToolbox.register('population', tools.initRepeat, list, nsgaToolbox.individual)
 
 # Fitness Function
@@ -56,7 +53,7 @@ creator.create('SingleObjIndividual', list, typecode = 'd', fitness = creator.Fi
 
 singleObjToolbox = base.Toolbox()
 singleObjToolbox.register('attr_bool', randint, 0, 1)
-singleObjToolbox.register('individual', tools.initRepeat, creator.SingleObjIndividual, singleObjToolbox.attr_bool, n = howManyRequirements)
+singleObjToolbox.register('individual', tools.initRepeat, creator.SingleObjIndividual, singleObjToolbox.attr_bool, n = len(costVector))
 singleObjToolbox.register('population', tools.initRepeat, list, singleObjToolbox.individual)
 
 # Fitness Function
